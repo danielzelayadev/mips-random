@@ -71,8 +71,69 @@ new_list_element:
 	jr $ra
 	
 insert:
+	# Prologue
+	
+	addiu $sp, $sp, -8
+	sw $ra, 0($sp)
+	sw $a0, 4($sp)
+	
+	# Create New Element
+	
+	move $a0, $a1
+	jal new_list_element # Create new list element
+		
+	lw $a0, 4($sp) # Restore list address
+	
+	# Decide Insert
+	
+	jal is_empty
+	
+	bne $v0, $zero, insert_first # if list->isEmpty, goto insert_first
+	
+	insert_default:
+		
+		lw $t0, 0($a0) # Load address of list->first
+		
+		insert_while:
+			lw $t1, 4($t0)              # Load address of elem->next
+			beq $t1, $zero, break_while # If elem->next == NULL, break
+			move $t0, $t1               # elem = elem->next
+			j insert_while
+		
+		break_while:
+			sw $v0, 4($t0) # Store new list element in elem->next
+		
+		j end_insert
+	
+	insert_first:
+		sw $v0, 0($a0) # Store first list element address in list->first
+		j end_insert
+		
+	end_insert:
+	
+		# Increment Size
+		
+		lw $t0, 4($a0)    # Load list->size
+		addiu $t0, $t0, 1 # list->size++
+		sw $t0, 4($a0)    # Store list->size
+	
+	# Epilogue
+	
+	lw $ra, 0($sp)
+	addiu $sp, $sp, 8
 	jr $ra
 	
+is_empty:
+	lw $t0, 0($a0)	# Load List->First
+	
+	beq $t0, $zero, return_true # If List->First == NULL
+	
+	return_false:
+		move $v0, $zero
+		jr $ra
+	return_true:
+		li $v0, 1
+		jr $ra
 	
 	
 # UTILITIES
