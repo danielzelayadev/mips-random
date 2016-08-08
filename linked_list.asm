@@ -1,7 +1,3 @@
-.data
-
-tab: .asciiz "            \t"
-
 .text
 
 # Linked List:
@@ -26,9 +22,14 @@ main:
 	jal insert
 	jal insert
 	jal insert
+	
+	jal clear
+	
 	jal insert
 	jal insert
 	jal insert
+	
+	
 	
 	jal size
 	move $a0, $v0
@@ -150,6 +151,11 @@ is_empty:
 		
 size:
 	lw $v0, 4($a0)
+	jr $ra
+	
+clear:
+	sw $zero, 0($a0)
+	sw $zero, 4($a0)
 	jr $ra
 	
 	
