@@ -1,54 +1,79 @@
 .text
 
 # Linked List:
-# Type  - 4 Bytes
-# Size  - 4 Bytes
 # First - 4 Bytes
+# Size  - 4 Bytes
+
+# Linked List Element:
+# Value - 4 Bytes
+# Next  - 4 Bytes
 
 main:
-	li $a0, 4 
+	# Create New Linked List
+	
 	jal new_list
 	
-	# Testing New List
+	move $s0, $v0 # Store new_list address in local variable
 	
-	move $s0, $v0
+	# Insert New Element
 	
-	lw $a0, 0($s0)
-	jal print_int
-	
-	lw $a0, 4($s0)
-	jal print_int
-	
-	lw $a0, 8($s0)
-	jal print_int
+	move $a0, $s0
+	li $a1, 500
+	jal insert
 	
 	j end
 
 new_list:
 	# Prologue
 	
-	addiu $sp, $sp, -8
+	addiu $sp, $sp, -4
 	sw $ra, 0($sp)
-	sw $a0, 4($sp)
 	
 	# Reserving Space for New Linked List
 	
-	li $a0, 12
+	li $a0, 8
 	jal malloc  # New Linked List
-	
-	lw $a0, 4($sp) # Restore new_list argument0
 	
 	# Init New Linked List
 	
-	sw $a0, 0($v0)   # Store Element Size
+	sw $zero, 0($v0) # Store NULL Reference for First Element
 	sw $zero, 4($v0) # Store Element Count
-	sw $zero, 8($v0) # Store NULL Reference for First Element
 	
 	# Epilogue
 	
 	lw $ra, 0($sp)
+	addiu $sp, $sp, 4
+	jr $ra
+	
+new_list_element:
+	# Prologue
+	
+	addiu $sp, $sp, -8
+	sw $ra, 0($sp)
+	sw $a0, 4($sp)
+	
+	# Reserve Space for New List Element
+	
+	li $a0, 8
+	jal malloc # New List Element
+	
+	lw $a0, 4($sp) # Restore argument0
+	
+	# Init New List Element
+		
+	sw $a0, 0($v0)   # Store the element's init value
+	sw $zero, 4($v0) # Store NULL Reference for Next Element
+	
+	# Epilogue:
+	
+	lw $ra, 0($sp)
 	addiu $sp, $sp, 8
 	jr $ra
+	
+insert:
+	jr $ra
+	
+	
 	
 # UTILITIES
 
