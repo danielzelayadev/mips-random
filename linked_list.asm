@@ -1,3 +1,7 @@
+.data
+
+tab: .asciiz "            \t"
+
 .text
 
 # Linked List:
@@ -20,6 +24,15 @@ main:
 	move $a0, $s0
 	li $a1, 500
 	jal insert
+	jal insert
+	jal insert
+	jal insert
+	jal insert
+	jal insert
+	
+	jal size
+	move $a0, $v0
+	jal print_int
 	
 	j end
 
@@ -48,39 +61,38 @@ new_list:
 new_list_element:
 	# Prologue
 	
-	addiu $sp, $sp, -8
+	addiu $sp, $sp, -4
 	sw $ra, 0($sp)
-	sw $a0, 4($sp)
 	
 	# Reserve Space for New List Element
 	
 	li $a0, 8
 	jal malloc # New List Element
 	
-	lw $a0, 4($sp) # Restore argument0
-	
 	# Init New List Element
 		
-	sw $a0, 0($v0)   # Store the element's init value
+	sw $a1, 0($v0)   # Store the element's init value
 	sw $zero, 4($v0) # Store NULL Reference for Next Element
 	
 	# Epilogue:
 	
 	lw $ra, 0($sp)
-	addiu $sp, $sp, 8
+	addiu $sp, $sp, 4
 	jr $ra
 	
 insert:
 	# Prologue
 	
-	addiu $sp, $sp, -8
+	addiu $sp, $sp, -12
 	sw $ra, 0($sp)
 	sw $a0, 4($sp)
+	sw $s0, 8($sp)
 	
 	# Create New Element
 	
 	move $a0, $a1
 	jal new_list_element # Create new list element
+	move $s0, $v0
 		
 	lw $a0, 4($sp) # Restore list address
 	
@@ -101,12 +113,12 @@ insert:
 			j insert_while
 		
 		break_while:
-			sw $v0, 4($t0) # Store new list element in elem->next
+			sw $s0, 4($t0) # Store new list element in elem->next
 		
 		j end_insert
 	
 	insert_first:
-		sw $v0, 0($a0) # Store first list element address in list->first
+		sw $s0, 0($a0) # Store first list element address in list->first
 		j end_insert
 		
 	end_insert:
@@ -119,8 +131,9 @@ insert:
 	
 	# Epilogue
 	
+	lw $s0, 8($sp)
 	lw $ra, 0($sp)
-	addiu $sp, $sp, 8
+	addiu $sp, $sp, 12
 	jr $ra
 	
 is_empty:
@@ -134,6 +147,10 @@ is_empty:
 	return_true:
 		li $v0, 1
 		jr $ra
+		
+size:
+	lw $v0, 4($a0)
+	jr $ra
 	
 	
 # UTILITIES
@@ -145,6 +162,11 @@ malloc:
 
 print_int:
 	li $v0, 1
+	syscall
+	jr $ra
+	
+print_str:
+	li $v0, 4
 	syscall
 	jr $ra
 	
