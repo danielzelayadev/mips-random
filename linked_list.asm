@@ -20,19 +20,22 @@ main:
 	move $a0, $s0
 	li $a1, 500
 	jal insert
+	li $a1, 120
 	jal insert
+	li $a1, 50
+	jal insert
+	li $a1, 5
+	jal insert
+	li $a1, 87
+	jal insert
+	li $a1, 42
 	jal insert
 	
-	jal clear
+	li $a1, 5
+	li $a2, 6
+	jal get
 	
-	jal insert
-	jal insert
-	jal insert
-	
-	
-	
-	jal size
-	move $a0, $v0
+	lw $a0, 0($v0)
 	jal print_int
 	
 	j end
@@ -136,6 +139,27 @@ insert:
 	lw $ra, 0($sp)
 	addiu $sp, $sp, 12
 	jr $ra
+	
+get:
+	bltz $a1, return_null
+	bge $a1, $a2, return_null
+	
+	li $t0, 0
+	lw $t1, 0($a0)
+	
+	cycle_list:
+		beq $t0, $a1, return_elem
+		lw $t1, 4($t1)
+		addiu $t0, $t0, 1
+		j cycle_list
+	
+	return_elem:
+		move $v0, $t1
+		jr $ra
+	
+	return_null:
+		move $v0, $zero
+		jr $ra
 	
 is_empty:
 	lw $t0, 0($a0)	# Load List->First
